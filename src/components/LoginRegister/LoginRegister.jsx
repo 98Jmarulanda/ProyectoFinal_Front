@@ -5,6 +5,7 @@ import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import { create } from "../../services/UserService";
 import { login } from '../../services/LoginService';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const initialDataForm = {
         name: '',
@@ -76,23 +77,34 @@ export const LoginRegister = () => {
                 password: loginPassword
             });
 
-            
-            // if (response.status !== 200) {
-            // setLoginError("Credenciales incorrectas");
-            // setTimeout(() => setLoginError(""), 7000);
-            // return;
-            // }
 
             const { token, username } = data;
+
+            //Decodificar token 
+            const decoded = jwtDecode(token);
+
+            // authorities viene como string JSON
+            const authorities = JSON.parse(decoded.authorities);
+            const role = authorities[0].authority; // ROLE_ADMIN o ROLE_USER
 
             // Guardar token y username
             localStorage.setItem("token", token);
             localStorage.setItem("username", username);
 
-            // console.log("Respuesta login:", data);
+            
 
             alert("Inicio de sesión exitoso")
-            navigate("/IndexAdm"); 
+
+            if (role === "ROLE_ADMIN") {
+
+                navigate("/IndexAdm");
+
+            } else {
+
+                navigate("/IndexUser");
+
+            }
+
 
         } catch (error) {
             console.error(error);
@@ -107,6 +119,8 @@ export const LoginRegister = () => {
     };
 
   return (
+
+    <div className='login-page'>
     <div className={`wrapper${action}${isAdmin ? ' admin-active' : ''}`}>
         <div className="form-box login">
             <form onSubmit={handlerLogin}>
@@ -266,6 +280,7 @@ export const LoginRegister = () => {
             </form>
         </div>
     </div>
+     </div>
   )
 }
 

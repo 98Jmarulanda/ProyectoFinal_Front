@@ -5,7 +5,6 @@ const loginUrl = 'http://localhost:8080/login';
 export const login = async ({email, password}) => {
 
     try {
-        console.log("Enviando al backend:", { email, password });
 
         const response = await axios.post(loginUrl, {
             email,
@@ -16,7 +15,7 @@ export const login = async ({email, password}) => {
 
         return response.data;
     } catch (error) {
-        console.log("Error al crear el usuario" + error);
+        console.log("Error al iniciar sesion" + error);
         throw error;
     }
     

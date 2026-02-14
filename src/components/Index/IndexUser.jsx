@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { create, findAll, remove, updated } from "../../services/CitaService";
+import { findAll, listCitas } from "../../services/CitaService";
 import { useNavigate } from "react-router-dom";
 
   const initialDataForm = {
@@ -9,9 +9,10 @@ import { useNavigate } from "react-router-dom";
     price: '',
     dateTime: ''
   }
-  export const IndexAdm = () => {
-    
+  export const IndexUser = () => {
+
     const navigate = useNavigate();
+    
     const [citas, setCitas] = useState([]);
 
     const [form, setForm] = useState(initialDataForm);
@@ -29,15 +30,12 @@ import { useNavigate } from "react-router-dom";
     const getCitas = async () => {
       try {
         const result = await findAll();
-        console.log(result.data);
-        setCitas(result.data);       
+        setCitas(result.data);
       } catch (error) {
         console.error("Error al cargar datos: ", error);
       }
-      
     }
 
-    /*EL useEffect no puede tener una fucnion async, pero los handdle sí */
     useEffect(() => {
       getCitas();
     }, []);
@@ -46,34 +44,18 @@ import { useNavigate } from "react-router-dom";
       setForm(citaSelected);
     }, [citaSelected]);
 
-    /*EL Handler puede tener una fucnion async, pero los useEffect no */
-    const handlerAddCita = async (cita) => {
-      // console.log(cita);
-      
+    const handlerAddCita = (cita) => {  
       if(cita.id > 0){
-        const response = await updated(cita);
-        console.log(response);
         setCitas(citas.map(cit => {
-          if(cit.id == response.data.id){
-            return {...response.data}
+          if(cit.id == cita.id){
+            return {...cita}
           }
           return cit;
         }));
       }else{
-        const response = await create(cita);
-        setCitas([...citas, {...response.data}]);
+        setCitas([...citas, {...cita, id: new Date().getTime()}]);
       }
       
-    }
-
-    const handlerRemoveCita =  (id) => {
-       remove(id);
-      //este filtro devuelve el arreglo con los valores que cumplan la función
-      setCitas(citas.filter(cita => cita.id != id));
-    }
-
-    const handlerSelectedCita = (cita) => {
-      setCitaSelected({...cita});
     }
 
     const handleLogout = () => {
@@ -81,6 +63,9 @@ import { useNavigate } from "react-router-dom";
       localStorage.removeItem("username")
       navigate("/")
       
+    }
+    const handlerSelectedCita = (cita) => {
+      setCitaSelected({...cita});
     }
 
     
@@ -106,12 +91,11 @@ import { useNavigate } from "react-router-dom";
                   <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" href="#" role="button"
                       data-bs-toggle="dropdown">
-                      Administración
+                      Citas
                     </a>
                     <ul className="dropdown-menu">
-                      <li><a className="dropdown-item" href="#">Citas</a></li>
-                      <li><a className="dropdown-item" href="#">Usuarios</a></li>
-                      <li><a className="dropdown-item" href="#">Citas Usuarios</a></li>
+                      <li><a className="dropdown-item" href="#">Reservar cita</a></li>
+                      <li><a className="dropdown-item" href="#">Mis citas</a></li>
                     </ul>
                   </li>
 
@@ -125,14 +109,14 @@ import { useNavigate } from "react-router-dom";
             </div>
           </nav>
         </div>
-        <h1 className="title mb-5">Perras, panel adminisgtrativo</h1>
+        <h1 className="title mb-5">Perras, panel de usuario</h1>
           <div className="row my-4">
               <div className="col">
                 <form onSubmit={(event) => {
                   event.preventDefault();
 
                   if(!name || !description || !price){
-                    alert('debe completar los datos')
+                    alert('debe seleccionar una cita')
                     return;
                   }
                     handlerAddCita(form);
@@ -141,9 +125,10 @@ import { useNavigate } from "react-router-dom";
                     }}>
                     <div>
                       <input placeholder="Nombre"
-                        className="form-control my-3 w-75"
+                        className="form-control my-3 w-75 bg-secondary text-white"
                         name="name"
                         value={name}
+                        readOnly
                         onChange={(event => setForm({
                           ...form, 
                           name: event.target.value
@@ -152,9 +137,10 @@ import { useNavigate } from "react-router-dom";
                     </div>
                     <div>
                       <input placeholder="Descripcion"
-                        className="form-control my-3 w-75"
+                        className="form-control my-3 w-75 bg-secondary text-white"
                         name="description"
                         value={description}
+                        readOnly
                         onChange={(event => setForm({
                           ...form, 
                           description: event.target.value
@@ -163,9 +149,10 @@ import { useNavigate } from "react-router-dom";
                     </div>
                     <div>
                       <input placeholder="Precio"
-                        className="form-control my-3 w-75"
+                        className="form-control my-3 w-75 bg-secondary text-white"
                         name="price"
                         value={price}
+                        readOnly
                         onChange={(event => setForm({
                           ...form, 
                           price: event.target.value
@@ -174,9 +161,10 @@ import { useNavigate } from "react-router-dom";
                     </div>
                     <div>
                       <input
-                        type="datetime-local"
-                        className="form-control my-3 w-75"
+                        type="datetime-local" 
+                        className="form-control my-3 w-75 bg-secondary text-white"
                         value={dateTime}
+                        readOnly
                         onChange={(e) =>
                           setForm({
                             ...form,
@@ -188,7 +176,7 @@ import { useNavigate } from "react-router-dom";
                     </div>
                     <div className="d-flex justify-content-start" style={{width: '410px'}}>
                       <button type="submit" className="btn btn-primary m-3">
-                        {id > 0 ? 'Actualizar': 'Crear'}
+                        {id > 0 ? 'Reservar': 'seleccione una cita'}
                       </button>
                     </div>
                     
@@ -205,7 +193,6 @@ import { useNavigate } from "react-router-dom";
                           <th>precio</th>
                           <th>fecha</th>
                           <th>actualizar</th>
-                          <th>eliminar</th>
                         </tr>   
                       </thead>
                       <tbody>
@@ -217,18 +204,10 @@ import { useNavigate } from "react-router-dom";
                             <td>{cita.dateTime}</td>
                             <td>
                               <button
-                                className="btn btn-secondary btn-sm"
+                                className="btn btn-success btn-sm"
                                 onClick={() => handlerSelectedCita(cita)}
                               >
-                                Actualizar
-                              </button>
-                            </td>
-                            <td>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handlerRemoveCita(cita.id)}
-                              >
-                                Eliminar
+                                Reservar
                               </button>
                             </td>
                           </tr>
