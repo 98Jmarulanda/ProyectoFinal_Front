@@ -35,19 +35,14 @@ export const findAll = async() => {
 }
 
 export const create = async ({name, description, price, dateTime}) => {
-
-  try {
     const response = await api.post('/citas', {
     name,
     description,
     price,
     dateTime
   });
+  
   return response
-  } catch (error) {
-    console.log(error);
-  }
-  return undefined;
 }
 
 export const updated = async ({id, name, description, price, dateTime}) => {

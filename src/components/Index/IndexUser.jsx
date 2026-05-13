@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { findAll, listCitas } from "../../services/CitaService";
 import { useNavigate } from "react-router-dom";
+import { crearReserva } from "../../services/UserCitaService";
 
   const initialDataForm = {
     id: 0,
@@ -44,19 +45,19 @@ import { useNavigate } from "react-router-dom";
       setForm(citaSelected);
     }, [citaSelected]);
 
-    const handlerAddCita = (cita) => {  
-      if(cita.id > 0){
-        setCitas(citas.map(cit => {
-          if(cit.id == cita.id){
-            return {...cita}
-          }
-          return cit;
-        }));
-      }else{
-        setCitas([...citas, {...cita, id: new Date().getTime()}]);
-      }
+    // const handlerAddCita = (cita) => {  
+    //   if(cita.id > 0){
+    //     setCitas(citas.map(cit => {
+    //       if(cit.id == cita.id){
+    //         return {...cita}
+    //       }
+    //       return cit;
+    //     }));
+    //   }else{
+    //     setCitas([...citas, {...cita, id: new Date().getTime()}]);
+    //   }
       
-    }
+    // }
 
     const handleLogout = () => {
       localStorage.removeItem("token");
@@ -64,8 +65,33 @@ import { useNavigate } from "react-router-dom";
       navigate("/")
       
     }
+
     const handlerSelectedCita = (cita) => {
       setCitaSelected({...cita});
+    }
+
+    const reservar = async (idCita) => {
+      const fechaCita = new Date(citaSelected.dateTime);
+      const ahora = new Date();
+      
+      if (!citaSelected.id) {
+        alert("Selecciona una cita primero");
+        setForm(initialDataForm);
+        return;
+      }
+      if (fechaCita < ahora) {
+        alert("No puedes reservar una cita con fecha anterior a la actual");
+        setForm(initialDataForm);
+        return;
+      }
+      try {
+        const response = await crearReserva(idCita);
+        alert("Cita reservada correctamente"); 
+        console.log(response);
+      } catch (error) {
+        console.error(error);
+        alert("Error al reservar la cita ");
+      }
     }
 
     
@@ -91,11 +117,10 @@ import { useNavigate } from "react-router-dom";
                   <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" href="#" role="button"
                       data-bs-toggle="dropdown">
-                      Citas
+                      Información
                     </a>
                     <ul className="dropdown-menu">
-                      <li><a className="dropdown-item" href="#">Reservar cita</a></li>
-                      <li><a className="dropdown-item" href="#">Mis citas</a></li>
+                      <li><a className="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); navigate("/MyInfo")}}>Mi perfil</a></li>
                     </ul>
                   </li>
 
@@ -109,17 +134,17 @@ import { useNavigate } from "react-router-dom";
             </div>
           </nav>
         </div>
-        <h1 className="title mb-5">Perras, panel de usuario</h1>
+        <h1 className="title mb-5">Panel de usuario</h1>
           <div className="row my-4">
               <div className="col">
                 <form onSubmit={(event) => {
                   event.preventDefault();
 
-                  if(!name || !description || !price){
-                    alert('debe seleccionar una cita')
-                    return;
-                  }
-                    handlerAddCita(form);
+                  // if(!name || !description || !price){
+                  //   alert('debe seleccionar una cita')
+                  //   return;
+                  // }
+                    // handlerAddCita(form);
                     setForm(initialDataForm);
 
                     }}>
@@ -175,7 +200,7 @@ import { useNavigate } from "react-router-dom";
                       />
                     </div>
                     <div className="d-flex justify-content-start" style={{width: '410px'}}>
-                      <button type="submit" className="btn btn-primary m-3">
+                      <button type="submit" className="btn btn-primary m-3" onClick={() => reservar(citaSelected.id)}>
                         {id > 0 ? 'Reservar': 'seleccione una cita'}
                       </button>
                     </div>

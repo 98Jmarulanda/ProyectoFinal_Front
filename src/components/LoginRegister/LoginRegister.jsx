@@ -78,7 +78,7 @@ export const LoginRegister = () => {
             });
 
 
-            const { token, username } = data;
+            const { token, username } = data;   
 
             //Decodificar token 
             const decoded = jwtDecode(token);
@@ -109,7 +109,7 @@ export const LoginRegister = () => {
         } catch (error) {
             console.error(error);
             if (error.response?.status === 401) {
-            setLoginError("Credenciales incorrectas");
+            setLoginError("Nombre de usuario o contraseña incorrectos");
         } else {
             setLoginError("Error en el servidor");
         }
@@ -143,7 +143,9 @@ export const LoginRegister = () => {
                         </label>
                         <a href='#'>Olvidé la contraseña</a>
                 </div>
-
+                {loginError && (
+                    <p className="error-text">{loginError}</p>
+                )}    
                 <button type="submit">Login</button>
 
                 <div className="register-link">
