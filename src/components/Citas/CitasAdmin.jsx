@@ -71,7 +71,7 @@ export const CitasAdmin = () => {
             <div>
                 <nav className="navbar navbar-expand-lg bg-body-tertiary mb-5">
                     <div className="container-fluid">
-                    <a className="navbar-brand" href="#">OdontoYa</a>
+                    <a className="navbar-brand" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexAdm")}}>OdontoYa</a>
 
                     <button className="navbar-toggler" type="button"
                             data-bs-toggle="collapse"
@@ -82,7 +82,7 @@ export const CitasAdmin = () => {
                         <ul className="navbar-nav ms-auto me-4 mb-2 mb-lg-0">
 
                         <li className="nav-item me-3">
-                            <a className="nav-link active" href="#">Inicio</a>
+                            <a className="nav-link active" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexAdm")}}>Inicio</a>
                         </li>
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" role="button"

@@ -22,6 +22,8 @@ export const MyInfo = () => {
     const {id, name, lastname, phone, email} = form;
 
     const [role, setRole] = useState(null);
+    
+    const [mensajeBienvenida, setMensajeBienvenida] = useState(true);
 
     const [userSelected, setUserSelected] = useState({
       id: 0,
@@ -83,7 +85,7 @@ export const MyInfo = () => {
                 {role === "ROLE_USER" && (
                     <nav className="navbar navbar-expand-lg bg-body-tertiary mb-5">
                         <div className="container-fluid">
-                        <a className="navbar-brand" href="#">OdontoYa</a>
+                        <a className="navbar-brand" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexUser")}}>OdontoYa</a>
 
                         <button className="navbar-toggler" type="button"
                                 data-bs-toggle="collapse"
@@ -94,7 +96,7 @@ export const MyInfo = () => {
                             <ul className="navbar-nav ms-auto me-4 mb-2 mb-lg-0">
 
                             <li className="nav-item me-3">
-                                <a className="nav-link active" href="#">Inicio</a>
+                                <a className="nav-link active" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexUser")}}>Inicio</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" href="#" role="button"
@@ -120,7 +122,7 @@ export const MyInfo = () => {
                 {role === "ROLE_ADMIN" &&(
                     <nav className="navbar navbar-expand-lg bg-body-tertiary mb-5">
                         <div className="container-fluid">
-                        <a className="navbar-brand" href="#">OdontoYa</a>
+                        <a className="navbar-brand" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexAdm")}}>OdontoYa</a>
 
                         <button className="navbar-toggler" type="button"
                                 data-bs-toggle="collapse"
@@ -131,7 +133,7 @@ export const MyInfo = () => {
                             <ul className="navbar-nav ms-auto me-4 mb-2 mb-lg-0">
 
                             <li className="nav-item me-3">
-                                <a className="nav-link active" href="#">Inicio</a>
+                                <a className="nav-link active" href="#" onClick={(e) => {e.preventDefault(); navigate("/IndexAdm")}}>Inicio</a>
                             </li>
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle" href="#" role="button"
@@ -157,6 +159,27 @@ export const MyInfo = () => {
                 )}
             </div>
             <h1>Información personal</h1>
+            {mensajeBienvenida && role === "ROLE_USER" && (
+                <div className="alert alert-success alert-dismissible fade show" role="alert">
+                    ¡Hola, {name || userLogged?.name}! Por el momento cualquier cambio a la información personal debe de ser a través de nuestros contactos de soporte
+                    soporte@odontoya.com // 1-800-OdontoYa
+                    <button 
+                        type="button" 
+                        className="btn-close" 
+                        onClick={() => setMensajeBienvenida(false)}
+                    />
+                </div>
+            )}
+            {mensajeBienvenida && role === "ROLE_ADMIN" && (
+                <div className="alert alert-success alert-dismissible fade show" role="alert">
+                    ¡Hola, {name || userLogged?.name}! Cualquier cambio a información personal se hace a través de la opción "Usuarios"
+                    <button 
+                        type="button" 
+                        className="btn-close" 
+                        onClick={() => setMensajeBienvenida(false)}
+                    />
+                </div>
+            )}
             <div className="row my-4 justify-content-center">
                  <div className="col-md-6 d-flex flex-column align-items-center">  
                 <form onSubmit={(event) => {
